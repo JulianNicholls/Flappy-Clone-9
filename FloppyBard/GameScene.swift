@@ -18,12 +18,21 @@ class GameScene: SKScene {
 
         let bgTexture = SKTexture(imageNamed: "bg.png")
 
-        bkgr = SKSpriteNode(texture: bgTexture)
+        let moveBG      = SKAction.moveByX(-bgTexture.size().width, y: 0, duration: 9)
+        let replaceBG   = SKAction.moveByX(bgTexture.size().width, y: 0, duration: 0)
+        let slideBG     = SKAction.repeatActionForever(SKAction.sequence([moveBG, replaceBG]))
 
-        bkgr.position = CGPoint(x: CGRectGetMidX(self.frame), y: CGRectGetMidY(self.frame))
-        bkgr.size.height = self.frame.height
+        for var i = 0; i < 3; ++i {
+            bkgr = SKSpriteNode(texture: bgTexture)
 
-        self.addChild(bkgr)
+            bkgr.position = CGPoint(x: bgTexture.size().width / 2 + CGFloat(i) * bgTexture.size().width, y: CGRectGetMidY(self.frame))
+            bkgr.size.height = self.frame.height
+
+            bkgr.runAction(slideBG)
+            bkgr.zPosition = 0
+
+            self.addChild(bkgr)
+        }
 
         // Bird
 
@@ -37,10 +46,9 @@ class GameScene: SKScene {
 
         bird.position = CGPoint(x: CGRectGetMidX(self.frame), y: CGRectGetMidY(self.frame))
         bird.runAction(flap)
+        bird.zPosition = 4      // Always on top
 
         self.addChild(bird)
-        
-
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
