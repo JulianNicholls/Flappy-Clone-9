@@ -14,18 +14,32 @@ class GameScene: SKScene {
     var bkgr = SKSpriteNode()
 
     override func didMoveToView(view: SKView) {
-        // Background
 
-        let bgTexture = SKTexture(imageNamed: "bg.png")
+        makeBackground()
+        makeFlappingBird()
+        
+    }
+    
+    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+       /* Called when a touch begins */
+        
+    }
+   
+    override func update(currentTime: CFTimeInterval) {
+        /* Called before each frame is rendered */
+    }
+
+    func makeBackground() {
+        let bgTexture   = SKTexture(imageNamed: "bg.png")
 
         let moveBG      = SKAction.moveByX(-bgTexture.size().width, y: 0, duration: 9)
         let replaceBG   = SKAction.moveByX(bgTexture.size().width, y: 0, duration: 0)
         let slideBG     = SKAction.repeatActionForever(SKAction.sequence([moveBG, replaceBG]))
 
-        for var i = 0; i < 3; ++i {
+        for var idx: CGFloat = 0; idx < 3; ++idx {
             bkgr = SKSpriteNode(texture: bgTexture)
 
-            bkgr.position = CGPoint(x: bgTexture.size().width / 2 + CGFloat(i) * bgTexture.size().width, y: CGRectGetMidY(self.frame))
+            bkgr.position = CGPoint(x: bgTexture.size().width / 2 + idx * bgTexture.size().width, y: CGRectGetMidY(self.frame))
             bkgr.size.height = self.frame.height
 
             bkgr.runAction(slideBG)
@@ -33,9 +47,9 @@ class GameScene: SKScene {
 
             self.addChild(bkgr)
         }
+    }
 
-        // Bird
-
+    func makeFlappingBird() {
         let birdTextureUp   = SKTexture(imageNamed: "flappy1.png")
         let birdTextureDown = SKTexture(imageNamed: "flappy2.png")
 
@@ -49,14 +63,5 @@ class GameScene: SKScene {
         bird.zPosition = 4      // Always on top
 
         self.addChild(bird)
-    }
-    
-    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
-       /* Called when a touch begins */
-        
-    }
-   
-    override func update(currentTime: CFTimeInterval) {
-        /* Called before each frame is rendered */
     }
 }
