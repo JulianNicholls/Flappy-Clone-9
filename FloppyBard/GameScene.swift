@@ -8,16 +8,20 @@
 
 import SpriteKit
 
-class GameScene: SKScene {
+class GameScene: SKScene, SKPhysicsContactDelegate {
 
     var bird = SKSpriteNode()
     var bkgr = SKSpriteNode()
+    var ground = SKNode()
 
     override func didMoveToView(view: SKView) {
+        self.physicsWorld.contactDelegate = self
+        self.physicsWorld.gravity = CGVectorMake(0, -6.0)
 
         makeBackground()
+        makeGround()
         makeFlappingBird()
-        
+
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
@@ -43,10 +47,20 @@ class GameScene: SKScene {
             bkgr.size.height = self.frame.height
 
             bkgr.runAction(slideBG)
-            bkgr.zPosition = 0
+//            bkgr.zPosition = 0
 
             self.addChild(bkgr)
         }
+    }
+
+    func makeGround() {
+        ground.position = CGPointMake(0, 0)
+        ground.zPosition = 5
+
+        ground.physicsBody = SKPhysicsBody(rectangleOfSize: CGSizeMake(self.frame.width, 1))
+        ground.physicsBody?.dynamic = false
+
+        self.addChild(ground)
     }
 
     func makeFlappingBird() {
@@ -58,10 +72,15 @@ class GameScene: SKScene {
 
         bird = SKSpriteNode(texture: birdTextureUp)
 
-        bird.position = CGPoint(x: CGRectGetMidX(self.frame), y: CGRectGetMidY(self.frame))
+        bird.position = CGPoint(x: CGRectGetMidX(self.frame), y: CGRectGetMaxY(self.frame))
+        bird.zPosition = 5      // Always on top
         bird.runAction(flap)
-        bird.zPosition = 4      // Always on top
+
+        bird.physicsBody = SKPhysicsBody(circleOfRadius: bird.size.height / 2)
+        bird.physicsBody?.dynamic = true
 
         self.addChild(bird)
+
+
     }
 }
