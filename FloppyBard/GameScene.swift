@@ -12,7 +12,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
     var bird = SKSpriteNode()
     var bkgr = SKSpriteNode()
-    var ground = SKNode()
 
     override func didMoveToView(view: SKView) {
         self.physicsWorld.contactDelegate = self
@@ -25,8 +24,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
-       /* Called when a touch begins */
-        
+        bird.physicsBody!.velocity = CGVectorMake(0, 0)
+        bird.physicsBody?.applyImpulse(CGVectorMake(0, 50))
     }
    
     override func update(currentTime: CFTimeInterval) {
@@ -54,11 +53,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
 
     func makeGround() {
-        ground.position = CGPointMake(0, 0)
-        ground.zPosition = 5
+        let ground = SKNode()
 
-        ground.physicsBody = SKPhysicsBody(rectangleOfSize: CGSizeMake(self.frame.width, 1))
-        ground.physicsBody?.dynamic = false
+        ground.position = CGPointMake(CGRectGetMidX(self.frame), 0)
+        ground.zPosition = 1
+        
+        print(self.frame.size.width)
+
+        ground.physicsBody = SKPhysicsBody(rectangleOfSize: CGSizeMake(self.frame.size.width, 1), center: ground.position)
+        ground.physicsBody?.dynamic = true
 
         self.addChild(ground)
     }
@@ -72,6 +75,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
         bird = SKSpriteNode(texture: birdTextureUp)
 
+        print(CGRectGetMidX(self.frame))
+        print(CGRectGetMaxY(self.frame))
+        
         bird.position = CGPoint(x: CGRectGetMidX(self.frame), y: CGRectGetMaxY(self.frame))
         bird.zPosition = 5      // Always on top
         bird.runAction(flap)
