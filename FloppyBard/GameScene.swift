@@ -18,8 +18,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.physicsWorld.gravity = CGVectorMake(0, -6.0)
 
         makeBackground()
-        makeGround()
         makeFlappingBird()
+        makeGround()
 
     }
     
@@ -61,7 +61,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         print(self.frame.size.width)
 
         ground.physicsBody = SKPhysicsBody(rectangleOfSize: CGSizeMake(self.frame.size.width, 1), center: ground.position)
-        ground.physicsBody?.dynamic = true
+        ground.physicsBody?.dynamic = false
 
         self.addChild(ground)
     }
