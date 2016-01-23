@@ -16,9 +16,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var pipe1 = SKSpriteNode()
     var pipe2 = SKSpriteNode()
 
+    var score       = 0
+    var scoreLabel  = SKLabelNode()
+
     enum ColliderType : UInt32 {
         case Bird   = 1
         case Object = 2
+        case Gap    = 4
     }
 
     var gameOver = false
@@ -49,6 +53,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
 
     func didBeginContact(contact: SKPhysicsContact) {
+        if contact.bodyA.categoryBitMask == ColliderType.Gap.rawValue ||
+           contact.bodyB.categoryBitMask == ColliderType.Gap.rawValue {
+            ++score
+            print(score)
+        }
+
         print("Contact")
 
         gameOver = true
@@ -115,7 +125,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func addPipes() {
         let pipe1Texture    = SKTexture(imageNamed: "pipe1.png")
         let pipe2Texture    = SKTexture(imageNamed: "pipe2.png")
-        let gap             = bird.size.height * 3
+        let gapHeight       = bird.size.height * 3
         let updown          = CGFloat(arc4random() % UInt32(self.frame.size.height / 2))
         let offset          = updown - self.frame.size.height / 4
 
@@ -127,7 +137,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
         pipe1 = SKSpriteNode(texture: pipe1Texture)
 
-        pipe1.position = CGPoint(x: CGRectGetMaxX(self.frame) + self.frame.size.width, y: CGRectGetMidY(self.frame) + pipe1Texture.size().height / 2 + gap / 2 + offset)
+        pipe1.position = CGPoint(x: CGRectGetMidX(self.frame) + self.frame.size.width, y: CGRectGetMidY(self.frame) + pipe1Texture.size().height / 2 + gapHeight / 2 + offset)
         pipe1.runAction(moveandRemove)
 
         pipe1.physicsBody = SKPhysicsBody(rectangleOfSize: pipe1Texture.size())
@@ -143,7 +153,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
         pipe2 = SKSpriteNode(texture: pipe2Texture)
 
-        pipe2.position = CGPoint(x: CGRectGetMaxX(self.frame) + self.frame.size.width, y: CGRectGetMidY(self.frame) - pipe2Texture.size().height / 2 - gap / 2 + offset)
+        pipe2.position = CGPoint(x: CGRectGetMidX(self.frame) + self.frame.size.width, y: CGRectGetMidY(self.frame) - pipe2Texture.size().height / 2 - gapHeight / 2 + offset)
         pipe2.runAction(moveandRemove)
 
         pipe2.physicsBody = SKPhysicsBody(rectangleOfSize: pipe2Texture.size())
@@ -154,5 +164,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         pipe2.physicsBody?.collisionBitMask      = ColliderType.Object.rawValue
 
         self.addChild(pipe2)
+
+        // Scoring gap
+
+        let gap = SKSpriteNode(color: UIColor.whiteColor(), size: CGSizeMake(pipe1.size.width, gapHeight))
+
+        gap.position = CGPoint(x: CGRectGetMidX(self.frame) + self.frame.size.width, y: CGRectGetMidY(self.frame) + offset)
+        gap.runAction(moveandRemove)
+
+        gap.physicsBody = SKPhysicsBody(rectangleOfSize: CGSizeMake(pipe1.size.width, gapHeight))
+        gap.physicsBody?.dynamic = false
+
+        gap.physicsBody?.categoryBitMask       = ColliderType.Gap.rawValue
+        gap.physicsBody?.contactTestBitMask    = ColliderType.Bird.rawValue
+        gap.physicsBody?.collisionBitMask      = ColliderType.Gap.rawValue
+
+        self.addChild(gap)
     }
 }
